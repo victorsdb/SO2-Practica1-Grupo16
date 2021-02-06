@@ -7,5 +7,3 @@
  | 201113915 | Victor Alfonso López Morales            |
  | 201503738 | Juan José Lima Ramirez                  |
  | 201504095 | Virginia Cristel Mishel Medina Ramírez  |
- |           |                                         |
-

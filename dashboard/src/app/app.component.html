@@ -1,0 +1,54 @@
+<div>
+  <nav class="navbar navbar-dark navbar-expand bg-dark topbar fixed-top" style="height: 10vh;">
+    <div class="container-fluid">
+      <div class="row">
+        <button class="btn btn-link rounded-circle d-md-none mr-3" id="sidebarToggleTop" type="button">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-5" href="#">
+          <img src="../assets/logo.png" style="width: 50px;" alt="">
+          <div class="sidebar-brand-text mx-3">
+            <span class="text-uppercase" style="font-size: 35px;">Dashboard</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div class="d-flex flex-row">
+    <nav class="navbar navbar-dark  align-items-start p-0 fixed-top"
+      style="margin-top: 10vh; height: 100vh; width: 13rem; background: SlateGray;">
+      <div class="container-fluid d-flex flex-column p-0">
+        <ul class="nav navbar-nav text-light pr-5 pt-5 pl-2">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="procesos" routerLinkActive="active">
+              <i class="fas fa-tachometer-alt mr-2"></i>
+              <span class="text-uppercase">Procesos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="monitor-ram" routerLinkActive="active">
+              <i class="fas fa-tachometer-alt mr-2"></i>
+              <span class="text-uppercase">Monitor RAM</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="monitor-cpu" routerLinkActive="active">
+              <i class="fas fa-tachometer-alt mr-2"></i>
+              <span class="text-uppercase">Monitor CPU</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+
+   <div class="container contenido">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+  <footer class="d-flex justify-content-center align-items-center bg-secondary text-light fixed-bottom" style="height: 5vh">
+    <span>Copyright © Dashboard 2021</span>
+  </footer>
+</div>

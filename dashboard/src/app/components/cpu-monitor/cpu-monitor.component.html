@@ -1,0 +1,35 @@
+<div class="container ">
+    <div class="row justify-content-center">
+            <div class="card bg-light text-black" style="width: 25rem;">
+                <div class="card-header">
+                    <h5 class="card-title text-center">CPU Utilizada: {{porcentaje}}%</h5>
+                </div>
+                <div class="card-body">
+                    <div style="display: block;">
+                        <canvas baseChart *ngIf="pieChartData"
+                            [data]="pieChartData" 
+                            [labels]="pieChartLabels" 
+                            [chartType]="pieChartType"
+                            [options]="pieChartOptions"
+                            [plugins]="pieChartPlugins"
+                            [colors]="pieChartColors"
+                            [legend]="pieChartLegend">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div style="display: block;" class="row">
+        <canvas baseChart *ngIf="lineChartData" width="1500" height="500"
+            [datasets]="lineChartData"
+            [labels]="lineChartLabels"
+            [options]="lineChartOptions"
+            [colors]="lineChartColors"
+            [legend]="lineChartLegend"
+            [chartType]="lineChartType"
+            [plugins]="lineChartPlugins">
+        </canvas>
+    </div>
+</div>
+

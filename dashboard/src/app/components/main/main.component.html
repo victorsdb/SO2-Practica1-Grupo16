@@ -1,0 +1,96 @@
+<div class="container">
+
+  <div class="row justify-content-center text-center">
+    <div class="card bg-dark text-white" style="width: 16rem;">
+      <div class="card-header">
+        <h5 class="card-title">Total</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title"> {{ this.totalProcesos }} </h5>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center text-center">
+    <div class="card mt-5 bg-light" style="width: 16rem;">
+      <div class="card-header">
+        <h5 class="card-title">Ejecución</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ this.procesosEjecucion }}</h5>
+      </div>
+    </div>
+
+    <div class="card mt-5 mx-2 bg-light text-center" style="width: 16rem;">
+      <div class="card-header">
+        <h5 class="card-title">Suspendido</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ this.procesosSuspendidos }}</h5>
+      </div>
+    </div>
+
+    <div class="card mt-5 mx-2 bg-light text-center" style="width: 16rem;">
+      <div class="card-header">
+        <h5 class="card-title">Detenidos</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ this.proccesosDetenidos }}</h5>
+      </div>
+    </div>
+
+    <div class="card mt-5 mx-2 bg-light text-center" style="width: 16rem;">
+      <div class="card-header">
+        <h5 class="card-title">Zombies</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title"> {{ this.procesosZombie }} </h5>
+      </div>
+    </div>
+
+  </div>
+
+  <br />
+  <h1 class=" title text-center">
+    {{respuesta}}
+  </h1>
+  <br />
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h1 class=" title text-center">
+        Procesos del Sistema Operativo
+      </h1>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">PID</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Jerarquia</th>
+            <th scope="col" class="text-center">Kill</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proc of strProcesos">
+            <td></td>
+            <td>{{ proc.pid }}</td>
+            <td>{{ proc.nombre }}</td>
+            <td>{{ proc.estado }}</td>
+            <td>{{ proc.id }}</td>
+            <td class="text-center">
+              <button class="btn btn-danger" (click)="matar_proceso(proc.pid)">
+                <i class="fas fa-skull-crossbones fa-2x"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</div>
