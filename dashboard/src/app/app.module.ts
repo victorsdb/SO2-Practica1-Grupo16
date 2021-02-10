@@ -8,7 +8,8 @@ import { AppComponent } from './app.component';
 
 import { RamMonitorComponent } from './components/ram-monitor/ram-monitor.component';
 import { CpuMonitorComponent } from './components/cpu-monitor/cpu-monitor.component';
-import { MainComponent } from './components/main/main.component';
+import { ProcMonitorComponent } from './components/proc-monitor/proc-monitor.component';
+
 
 import { ToolbarItem, TreeGridModule} from '@syncfusion/ej2-angular-treegrid';
 
@@ -18,13 +19,15 @@ import {
   FilterService,
   ToolbarService
 } from "@syncfusion/ej2-angular-treegrid";
+import { MainComponent } from './components/main/main.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RamMonitorComponent,
     CpuMonitorComponent,
-    MainComponent
+    ProcMonitorComponent,
+    MainComponent,
   ],
   imports: [
     BrowserModule,
