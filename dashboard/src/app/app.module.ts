@@ -10,6 +10,15 @@ import { RamMonitorComponent } from './components/ram-monitor/ram-monitor.compon
 import { CpuMonitorComponent } from './components/cpu-monitor/cpu-monitor.component';
 import { MainComponent } from './components/main/main.component';
 
+import { ToolbarItem, TreeGridModule} from '@syncfusion/ej2-angular-treegrid';
+
+import {
+  PageService,
+  SortService,
+  FilterService,
+  ToolbarService
+} from "@syncfusion/ej2-angular-treegrid";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,9 +30,15 @@ import { MainComponent } from './components/main/main.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ChartsModule
+    ChartsModule,
+    TreeGridModule
   ],
-  providers: [],
+  providers: [
+    PageService,
+    SortService,
+    FilterService,
+    ToolbarService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

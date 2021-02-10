@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { webSocket } from "rxjs/webSocket";
 
+import { PageSettingsModel, SortSettingsModel, ToolbarItems } from "@syncfusion/ej2-angular-treegrid";
+
+
+import { Proceso } from './proceso';
+
 const subject = webSocket("ws://localhost:3000/ws");
 const subject2 = webSocket("ws://localhost:3000/ws");
-
-class Proceso {
-  id: string = "";
-  pid: string = "";
-  nombre: string = "";
-  estado: string = "";
-}
 
 @Component({
   selector: 'app-main',
@@ -18,16 +16,17 @@ class Proceso {
 })
 
 export class MainComponent implements OnInit {
-  
-  public procesosEjecucion = 0;
-  public procesosSuspendidos = 0;
-  public proccesosDetenidos = 0;
-  public procesosZombie = 0;
-  public totalProcesos = 0;
-  public todosprocesos: string[]= [];
-  public strProcesos: Proceso[] = new Array;
 
-  public respuesta =  "";
+  public ejecutados = 0;
+  public suspendidos = 0;
+  public detenidos = 0;
+  public zombies = 0;
+  public total = 0;
+
+  public data_procesos: Proceso[] = [];
+  public toolbarOptions: ToolbarItems[] = [];
+  public sortSettings: SortSettingsModel = {};
+  public pageSettings: PageSettingsModel = {};
 
   constructor() { }
 
@@ -35,53 +34,59 @@ export class MainComponent implements OnInit {
     this.leer_procesos();
   }
 
-  leer_procesos(){
-    subject.subscribe(
-      msg => {
-        var procesos = JSON.parse(JSON.stringify(msg));
-        
-        this.procesosEjecucion = procesos.ejecucion
-        this.procesosSuspendidos = procesos.suspendidos
-        this.proccesosDetenidos = procesos.detenidos
-        this.procesosZombie = procesos.zombie
-        this.totalProcesos = procesos.total
-        var proc = procesos.lista + ""
+  leer_procesos() {
+    subject.subscribe((datos) => {
 
-        this.todosprocesos = proc.split('$');
+      const json_data = JSON.parse(JSON.stringify(datos))
 
-        for (let pr of this.todosprocesos){
+      this.total = json_data.total;
+      this.detenidos = json_data.detenidos;
+      this.ejecutados = json_data.ejecutados;
+      this.zombies = json_data.zombies;
+      this.suspendidos = json_data.suspendidos;
 
-          var pro = pr.split(',')
+      let data = json_data.procesos;
 
-          let p = new Proceso();
-          p.id = pro[0]
-          p.pid = pro[1]
-          p.nombre = pro[2]
-          p.estado = pro[3]
-
-          this.strProcesos.push(p)
+      let tmp: Proceso[] = [];
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          const element: Proceso = data[key];
+          tmp.push(element);
         }
-        this.strProcesos = this.strProcesos.splice(1)
-      }, 
-      err => console.log(err), 
+      }
+
+      this.data_procesos = tmp;
+      
+      this.sortSettings = {
+        columns: [
+          {
+            field: "nombre",
+            direction: "Ascending"
+          },
+        ]
+      };
+
+      this.pageSettings = { pageSize: 15 };
+      this.toolbarOptions = ['ExpandAll', 'CollapseAll', 'Print'];
+
+    },
+      err => console.log(err),
       () => console.log('complete')
     )
     subject.next(2);
   }
 
-  matar_proceso(proceso:string){
+  matar_proceso(proceso: string) {
 
     subject2.subscribe(
       msg => {
         var res = JSON.stringify(msg);
-        this.respuesta = res
-        console.log(this.respuesta)
-      }, 
-      err => console.log(err), 
+      },
+      err => console.log(err),
       () => console.log('complete')
     )
 
     subject2.next(parseInt(proceso));
-    console.log("mato proceso");
+    alert("Mato el proceso con PID: " + proceso);
   }
 }
