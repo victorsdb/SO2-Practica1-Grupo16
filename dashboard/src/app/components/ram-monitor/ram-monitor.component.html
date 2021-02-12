@@ -1,59 +1,46 @@
 <div class="container">
+    <h1 class=" title text-center">
+        Monitor de la Memoria RAM
+    </h1>
     <div class="row justify-content-center">
-        
-            <div class="card mx-2 mb-3 bg-light text-black" style="width: 25rem;">
+        <div class="card mx-2 bg-light text-black" style="width: 25rem;">
+            <div class="card-header">
+                <h5 class="card-title text-center">RAM Utilizada: {{porcentaje}}%</h5>
+            </div>
+            <div class="card-body">
+
+                <div style="display: block;">
+                    <canvas baseChart *ngIf="pieChartData" [data]="pieChartData" [labels]="pieChartLabels"
+                        [chartType]="pieChartType" [options]="pieChartOptions" [plugins]="pieChartPlugins"
+                        [colors]="pieChartColors" [legend]="pieChartLegend">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card mx-2 mb-2 bg-light" style="width: 14rem;">
                 <div class="card-header">
-                    <h5 class="card-title text-center">RAM Utilizada: {{porcentaje}}%</h5>
+                    <h5 class="card-title">Memoria Total</h5>
                 </div>
                 <div class="card-body">
-
-                    <div style="display: block;">
-                        <canvas baseChart *ngIf="pieChartData"
-                            [data]="pieChartData" 
-                            [labels]="pieChartLabels" 
-                            [chartType]="pieChartType"
-                            [options]="pieChartOptions"
-                            [plugins]="pieChartPlugins"
-                            [colors]="pieChartColors"
-                            [legend]="pieChartLegend">
-                        </canvas>
-                    </div>
+                    <h5 class="card-title">{{total}} MB</h5>
                 </div>
             </div>
-            <div>
-                <div class="card mx-2 mb-3 bg-primary text-white" style="width: 16rem;">
-                    <div class="card-header">
-                        <h5 class="card-title">Memoria Total</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{total}} MB</h5>
-                    </div>
+            <div class="card mx-2 bg-light" style="width: 14rem;">
+                <div class="card-header">
+                    <h5 class="card-title">Memoria Usada</h5>
                 </div>
-    
-                <div class="card mx-2 mb-3 bg-danger text-white" style="width: 16rem;">
-                    <div class="card-header">
-                        <h5 class="card-title">Memoria Usada</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{usada}} MB</h5>
-                    </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{usada}} MB</h5>
                 </div>
-                
             </div>
-
-
-
+        </div>
     </div>
 
     <div style="display: block;" class="row">
-        <canvas baseChart *ngIf="lineChartData" width="1500px" height="500px"
-            [datasets]="lineChartData"
-            [labels]="lineChartLabels"
-            [options]="lineChartOptions"
-            [colors]="lineChartColors"
-            [legend]="lineChartLegend"
-            [chartType]="lineChartType"
-            [plugins]="lineChartPlugins">
+        <canvas baseChart *ngIf="lineChartData" width="1500px" height="470px" [datasets]="lineChartData"
+            [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+            [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
         </canvas>
     </div>
 

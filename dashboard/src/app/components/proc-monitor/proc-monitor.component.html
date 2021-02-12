@@ -1,88 +1,55 @@
 <div class="container-lg">
 
-  <div class="row justify-content-center text-center">
-    <div class="card mx-2 bg-light text-center" style="width: 12rem;">
-      <div class="card-header">
-        <h5 class="card-title">Total</h5>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title"> {{ this.total }} </h5>
-      </div>
-    </div>
+  <h1 class=" title text-center">
+    Monitor de Procesos
+  </h1>
+  
+  <table class="table table-bordered" height="100px">
+    <thead class="thead-light">
+      <tr>
+        <th class="text-center">Ejecutados</th>
+        <th class="text-center">Suspendidos</th>
+        <th class="text-center">Detenidos</th>
+        <th class="text-center">Zombies</th>
+        <th class="text-center">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-center">{{ this.ejecutados }}</td>
+        <td class="text-center">{{ this.suspendidos }}</td>
+        <td class="text-center">{{ this.detenidos }}</td>
+        <td class="text-center">{{ this.zombies }}</td>
+        <td class="text-center">
+          <strong>{{ this.total }}</strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    <div class="card mx-2 bg-light text-center" style="width: 12rem;">
-      <div class="card-header">
-        <h5 class="card-title">Ejecución</h5>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ this.ejecutados }}</h5>
-      </div>
-    </div>
-
-    <div class="card mx-2 bg-light text-center" style="width: 12rem;">
-      <div class="card-header">
-        <h5 class="card-title">Suspendido</h5>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ this.suspendidos }}</h5>
-      </div>
-    </div>
-
-    <div class="card mx-2 bg-light text-center" style="width: 12rem;">
-      <div class="card-header">
-        <h5 class="card-title">Detenidos</h5>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ this.detenidos }}</h5>
-      </div>
-    </div>
-
-    <div class="card mx-2 bg-light text-center" style="width: 12rem;">
-      <div class="card-header">
-        <h5 class="card-title">Zombies</h5>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title"> {{ this.zombies }} </h5>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="panel mt-5 panel-default">
-    <div class="panel-heading">
-      <h1 class=" title text-center">
-        Procesos del Sistema Operativo
-      </h1>
-    </div>
-
-    <ejs-treegrid 
-      height="318" width="100%" 
-      [dataSource]="data_procesos" 
-      [treeColumnIndex]="1"
-      childMapping="hijos"
-      [allowPaging]="true"
-      [pageSettings]="pageSettings"
-      [allowFiltering]='true'
-      [toolbar]='toolbarOptions'>
+  <div class="d-flex mt-3">
+    <ejs-treegrid height="318" width="100%" [dataSource]="data_procesos" [treeColumnIndex]="1" childMapping="hijos"
+      [allowPaging]="true" [pageSettings]="pageSettings" [allowFiltering]='true' [toolbar]='toolbarOptions'
+      [allowSorting]='true'>
       <e-columns>
         <e-column field="pid" headerText="PID" textAlign="Left" width="40"></e-column>
-        <e-column field="nombre" headerText="Nombre" textAlign="Left" width="90"></e-column>
-        <e-column field="estado" headerText="Estado" textAlign="Left" width="90"></e-column>
-        <e-column headerText="Matar Proceso" width='40' textAlign='Center'>
+        <e-column field="nombre" headerText="Nombre" textAlign="Left" width="60"></e-column>
+        <e-column field="user" headerText="Usuario" textAlign="Left" width="60"></e-column>
+        <e-column field="estado" headerText="Estado" textAlign="Left" width="60"></e-column>
+        <e-column field="ram" headerText="Memoria Virtual" textAlign="Left" width="60"></e-column>
+        <e-column headerText="Matar Proceso" width="50" textAlign="Center">
           <ng-template #template let-data>
-              <div>
-                <button class="btn-kill">
-                  <span class="btn-kill-icon" (click)="matar_proceso(data.pid)">
-                    <i class="fas fa-skull-crossbones" aria-hidden="true" id="i_pos"></i>
-                  </span>
-                </button>
-              </div>
+            <div>
+              <button class="btn-kill">
+                <span class="btn-kill-icon" (click)="matar_proceso(data.pid)">
+                  <i class="fas fa-skull-crossbones" aria-hidden="true" id="i_pos"></i>
+                </span>
+              </button>
+            </div>
           </ng-template>
-      </e-column>
+        </e-column>
       </e-columns>
     </ejs-treegrid>
-
   </div>
-
 
 </div>

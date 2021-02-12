@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { webSocket } from "rxjs/webSocket";
+import { webSocket } from 'rxjs/webSocket';
 
 import { PageSettingsModel, SortSettingsModel, ToolbarItems } from "@syncfusion/ej2-angular-treegrid";
 
+const subject = webSocket("ws://localhost:3001/ws");
+const subject2 = webSocket("ws://localhost:3001/ws");
+const subject3 = webSocket("ws://localhost:3000/ws");
 
-import { Proceso } from './proceso';
-
-const subject = webSocket("ws://localhost:3000/ws");
-const subject2 = webSocket("ws://localhost:3000/ws");
+let usuarios: any[] = [];
 
 @Component({
   selector: 'app-main',
@@ -23,7 +23,7 @@ export class ProcMonitorComponent implements OnInit {
   public zombies = 0;
   public total = 0;
 
-  public data_procesos: Proceso[] = [];
+  public data_procesos: any[] = [];
   public toolbarOptions: ToolbarItems[] = [];
   public sortSettings: SortSettingsModel = {};
   public pageSettings: PageSettingsModel = {};
@@ -31,13 +31,14 @@ export class ProcMonitorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.leer_usuarios();
     this.leer_procesos();
   }
 
   leer_procesos() {
     subject.subscribe((datos) => {
 
-      const json_data = JSON.parse(JSON.stringify(datos))
+      const json_data = JSON.parse(JSON.stringify(datos));
 
       this.total = json_data.total;
       this.detenidos = json_data.detenidos;
@@ -47,24 +48,34 @@ export class ProcMonitorComponent implements OnInit {
 
       let data = json_data.procesos;
 
-      let tmp: Proceso[] = [];
+      // console.log(usuarios.includes("1000"))
+
+
+
+      let tmp: any[] = [];
       for (const key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
-          const element: Proceso = data[key];
-          tmp.push(element);
+          const element: any = data[key];
+          let username = "";
+
+          usuarios.map((usuario) =>{
+            if (usuario.uid==element["user"]) {
+              username = usuario.username;
+            }
+          });
+          const proceso = {
+            pid: element["pid"],
+            nombre : element["nombre"],
+            user : username,
+            estado : element["estado"],
+            ram : element["ram"]
+          };
+
+          tmp.push(proceso);
         }
       }
 
       this.data_procesos = tmp;
-      
-      this.sortSettings = {
-        columns: [
-          {
-            field: "nombre",
-            direction: "Ascending"
-          },
-        ]
-      };
 
       this.pageSettings = { pageSize: 15 };
       this.toolbarOptions = ['ExpandAll', 'CollapseAll', 'Print'];
@@ -76,9 +87,38 @@ export class ProcMonitorComponent implements OnInit {
     subject.next(2);
   }
 
+  leer_usuarios() {
+    subject2.subscribe((datos) => {
+      const json_data = JSON.parse(JSON.stringify(datos));
+
+      for (const key in json_data) {
+        if (Object.prototype.hasOwnProperty.call(json_data, key)) {
+          const element = json_data[key];
+
+          for (const key in element) {
+            if (Object.prototype.hasOwnProperty.call(element, key)) {
+              const usuario = {
+                uid: element["uid"],
+                username: element["username"]
+              }
+              
+            }
+          }
+          usuarios.push(element)
+        }
+      }
+      //console.log(usuarios);
+    },
+      err => console.log(err),
+      () => console.log('complete')
+    )
+    subject2.next(3);
+  }
+
+
   matar_proceso(proceso: string) {
 
-    subject2.subscribe(
+    subject3.subscribe(
       msg => {
         var res = JSON.stringify(msg);
       },
@@ -86,7 +126,7 @@ export class ProcMonitorComponent implements OnInit {
       () => console.log('complete')
     )
 
-    subject2.next(parseInt(proceso));
+    subject3.next(parseInt(proceso));
     alert("Mato el proceso con PID: " + proceso);
   }
 }
