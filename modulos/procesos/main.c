@@ -7,32 +7,71 @@
 #include <linux/sched.h>
 #include <linux/fs.h>
 
-int procesosEjecucion = 0;
-int procesosSuspendidos = 0;
-int proccesosDetenidos = 0;
-int procesosZombie = 0;
-int totalProcesos = 0;
+int ejecutados = 0;
+int suspendidos = 0;
+int detenidos = 0;
+int zombies = 0;
+int total = 0;
 
 int contador = 0;
 
 struct task_struct *task;
 
-void getEstado(long estado)
+char *username;
+
+void getEstado(long state)
 {
-    totalProcesos = totalProcesos + 1;
-    switch (estado)
+    total++;
+    switch (state)
     {
-    case 1: //ejecucion
-        procesosEjecucion = procesosEjecucion + 1;
+
+    case 0x0000:
+        ejecutados++;
         break;
-    case 0: //pendiente
-        procesosSuspendidos = procesosSuspendidos + 1;
+    case 0x0001:
+        suspendidos++;
         break;
-    case 260: //Tl
-        proccesosDetenidos = proccesosDetenidos + 1;
+    case 0x0402:
+        suspendidos++;
         break;
-    case 128: //zombies
-        procesosZombie = procesosZombie + 1;
+    case 0x0020:
+        zombies++;
+        break;
+    case 0x0004:
+        detenidos++;
+        break;
+    case 0x0100:
+        detenidos++;
+        break;
+    }
+}
+
+void printState(struct seq_file *archivo, void *v, long state)
+{
+
+    switch (state)
+    {
+
+    case 0x0000:
+        seq_printf(archivo, "\"estado\":\"Ejecutandose\",");
+        break;
+    case 0x0001:
+        seq_printf(archivo, "\"estado\":\"Suspendido\",");
+        break;
+    case 0x0402:
+        seq_printf(archivo, "\"estado\":\"Suspendido\",");
+        break;
+    case 0x0020:
+        seq_printf(archivo, "\"estado\":\"Zombie\",");
+        break;
+    case 0x0004:
+        seq_printf(archivo, "\"estado\":\"Detenido\",");
+        break;
+    case 0x0100:
+        seq_printf(archivo, "\"estado\":\"Detenido\",");
+        break;
+    default:
+        seq_printf(archivo, "\"estado\":\"%ld\",", state);
         break;
     }
 }
@@ -41,6 +80,7 @@ void recorrer_hijos(struct seq_file *archivo, void *v, struct task_struct *t)
 {
     struct list_head *l;
     struct task_struct *tmp;
+
     int c = 0;
     list_for_each(l, &t->children)
     {
@@ -54,9 +94,15 @@ void recorrer_hijos(struct seq_file *archivo, void *v, struct task_struct *t)
         seq_printf(archivo, "{");
         seq_printf(archivo, "\"pid\":\"%d\",", tmp->pid);
         seq_printf(archivo, "\"nombre\":\"%s\",", tmp->comm);
-        seq_printf(archivo, "\"estado\":\"%ld\"", tmp->state);
+        printState(archivo, v, tmp->state);
+        if (tmp->mm != NULL)
+            seq_printf(archivo, "\"ram\":\"%lu MB\",", tmp->mm->total_vm * 4 / 1024);
+        else
+            seq_printf(archivo, "\"ram\":\"%d MB\",", 0);
 
-        getEstado(tmp->state);
+        //getEstado(tmp->state);
+
+        seq_printf(archivo, "\"user\":\"%u\"", tmp->cred->uid.val);
 
         recorrer_hijos(archivo, v, tmp);
 
@@ -72,17 +118,17 @@ void recorrer_hijos(struct seq_file *archivo, void *v, struct task_struct *t)
 static int escribir_archivo(struct seq_file *archivo, void *v)
 {
 
-    seq_printf(archivo, "{");
+    ejecutados = 0;
+    suspendidos = 0;
+    detenidos = 0;
+    zombies = 0;
+    total = 0;
+    contador = 0;
 
-    seq_printf(archivo, "\"total\":\"%d\",", totalProcesos);
-    seq_printf(archivo, "\"ejecutados\":\"%d\",", procesosEjecucion);
-    seq_printf(archivo, "\"suspendidos\":\"%d\",", procesosSuspendidos);
-    seq_printf(archivo, "\"detenidos\":\"%d\",", proccesosDetenidos);
-    seq_printf(archivo, "\"zombies\":\"%d\",", procesosZombie);
+    seq_printf(archivo, "{");
 
     seq_printf(archivo, "\"procesos\": [");
 
-    contador = 0;
     for_each_process(task)
     {
         if (contador > 0)
@@ -91,18 +137,30 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
         seq_printf(archivo, "{");
         seq_printf(archivo, "\"pid\":\"%d\",", task->pid);
         seq_printf(archivo, "\"nombre\":\"%s\",", task->comm);
-        seq_printf(archivo, "\"estado\":\"%ld\"", task->state);
-  
+        //seq_printf(archivo, "\"estado\":\"%ld\",", task->state);
+        printState(archivo, v, task->state);
+        if (task->mm != NULL)
+            seq_printf(archivo, "\"ram\":\"%lu MB\",", task->mm->total_vm * 4 / 1024);
+        else
+            seq_printf(archivo, "\"ram\":\"%d MB\",", 0);
+
         getEstado(task->state);
 
+        seq_printf(archivo, "\"user\":\"%u\"", task->cred->uid.val);
+
         recorrer_hijos(archivo, v, task);
-
-
 
         seq_printf(archivo, "}");
         contador++;
     }
-    seq_printf(archivo, "]");
+    seq_printf(archivo, "],");
+
+    seq_printf(archivo, "\"total\":\"%d\",", total);
+    seq_printf(archivo, "\"ejecutados\":\"%d\",", ejecutados);
+    seq_printf(archivo, "\"suspendidos\":\"%d\",", suspendidos);
+    seq_printf(archivo, "\"detenidos\":\"%d\",", detenidos);
+    seq_printf(archivo, "\"zombies\":\"%d\"", zombies);
+
     seq_printf(archivo, "}");
     return 0;
 }
