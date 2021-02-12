@@ -3,9 +3,9 @@ import { webSocket } from 'rxjs/webSocket';
 
 import { PageSettingsModel, SortSettingsModel, ToolbarItems } from "@syncfusion/ej2-angular-treegrid";
 
-const subject = webSocket("ws://localhost:3001/ws");
-const subject2 = webSocket("ws://localhost:3001/ws");
-const subject3 = webSocket("ws://localhost:3000/ws");
+const subject = webSocket("ws://3.80.78.1:3001/ws");
+const subject2 = webSocket("ws://3.80.78.1:3001/ws");
+const subject3 = webSocket("ws://3.80.78.1:3000/ws");
 
 let usuarios: any[] = [];
 

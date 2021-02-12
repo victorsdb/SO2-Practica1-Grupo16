@@ -3,7 +3,7 @@ import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Color, Label, SingleDataSet, monkeyPatchChartJsLegend, monkeyPatchChartJsTooltip } from 'ng2-charts';
 import { webSocket } from "rxjs/webSocket";
 
-const subject = webSocket("ws://localhost:3000/ws");
+const subject = webSocket("ws://3.80.78.1:3000/ws");
 
 var datos: number[] = new Array(46);
 let titulos: string[] = new Array(46);
