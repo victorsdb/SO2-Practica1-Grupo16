@@ -8,17 +8,21 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"io/ioutil"
-	"os/exec"
-	"time"
 	"encoding/json"
+	"io/ioutil"
+	"strings"
+	"time"
 )
 
 const (
-	MEMO     = 0
-	CPU      = 1
 	PROCESOS = 2
+	USUARIOS = 3
 )
+
+type Usuario struct{
+	Uid string `json:"uid"`
+	Username string `json:"username"`
+}
 
 var clientes = make(map[*websocket.Conn]string)
 
@@ -69,40 +73,6 @@ func envioInfo() {
 
 			if err == nil {
 				switch valor {
-				case MEMO:
-					data, err := ioutil.ReadFile("/proc/mem_grupo16")
-					if err != nil {
-						fmt.Println("File reading error", err)
-						return
-					}
-
-					string_json := string(data)
-					var data_json map[string]interface{}
-					json.Unmarshal([]byte(string_json), &data_json)
-
-					if errW := cliente.WriteJSON(data_json); errW != nil {
-						log.Printf("error: %v", errW)
-						cliente.Close()
-						delete(clientes, cliente)
-					}
-					break
-				case CPU:
-					data, err := ioutil.ReadFile("/proc/cpu_grupo16")
-					if err != nil {
-						fmt.Println("File reading error", err)
-						return
-					}
-
-					string_json := string(data)
-					var data_json map[string]interface{}
-					json.Unmarshal([]byte(string_json), &data_json)
-
-					if errW := cliente.WriteJSON(data_json); errW != nil {
-						log.Printf("error: %v", errW)
-						cliente.Close()
-						delete(clientes, cliente)
-					}
-					break
 				case PROCESOS:
 					data, err := ioutil.ReadFile("/proc/procesos_grupo16")
 					if err != nil {
@@ -119,32 +89,59 @@ func envioInfo() {
 						cliente.Close()
 						delete(clientes, cliente)
 					}
+					
+					break
+				case USUARIOS:
+					data, err := ioutil.ReadFile("/etc/passwd")
+					if err != nil {
+						fmt.Println("File reading error", err)
+						return
+					}
+
+					string_data := string(data)
+					usuarios := strings.Split(string_data, "\n")
+
+					var user Usuario
+
+					tamanio := 0
+					for _, usuario := range usuarios {
+						datos := strings.Split(usuario, ":")
+						if(len(datos)>1){
+							tamanio++
+						}
+					}
+
+					users := make([]interface{}, tamanio)
+
+					for i, usuario := range usuarios {
+						datos := strings.Split(usuario, ":")
+						
+						if(len(datos)>1){
+							user.Uid = datos[2] 
+							user.Username =  datos[0]
+							users[i] = user
+						}
+
+					}
+
+					if errW := cliente.WriteJSON(users); errW != nil {
+						log.Printf("error: %v", errW)
+						cliente.Close()
+						delete(clientes, cliente)
+					}
+
 					break
 				default:
 
-					cmd := exec.Command("sudo", "kill", "-9", strconv.Itoa(valor))
-					_, errC := cmd.Output()
-
-					if errC != nil {
-						fmt.Printf("error: %v", err)
-					}
-
-					if errW := cliente.WriteJSON("Se elimino el proceso PID: " + strconv.Itoa(valor)); errW != nil {
-						log.Printf("error: %v", errW)
-					}
-					delete(clientes, cliente)
-					cliente.Close()
-
 					break
 				}
-
 			}
 		}
 		if len(clientes) == 0 {
-			log.Println("Listening on :3000...")
+			log.Println("Listening on :3001...")
 		}
 
-		time.Sleep(3000 * time.Millisecond)
+		time.Sleep(10000 * time.Millisecond)
 	}
 }
 
@@ -155,8 +152,8 @@ func main() {
 	go envioInfo()
 
 	fmt.Println("Go WebSockets")
-	log.Println("Listening on :3000...")
-	err := http.ListenAndServe(":3000", nil)
+	log.Println("Listening on :3001...")
+	err := http.ListenAndServe(":3001", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
